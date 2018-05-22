@@ -16,6 +16,10 @@ void sendPointsToUart(DataToSend *data)
 {
     //организовываем передачу по UART
 }
+void sendDifferenceToUart()
+{
+
+}
 void filter (unsigned char* adc)
 {
     float EMA=0;
@@ -46,7 +50,7 @@ void filter (unsigned char* adc)
     }
 }
 
-void measure(unsigned char channel)
+void measureAndSend(unsigned char channel)
 {
     unsigned char j=0;
     unsigned int topLevel=((float)signalsArray[channel]->topMeasureLevel/100)*signalsArray[channel]->data[signalsArray[channel]->dataIndex];
@@ -107,7 +111,7 @@ void process (unsigned char* adc)
             if (signalsArray[i]->samplesCounter>signalsArray[i]->minSamplesCounter) //если количество семплов, которые больше cutLevel, больше minSamplesCounter
             {
                 signalsArray[i]->isSignalCaptured=1; //считаем, что сигнал захвачен, и можно приступать к измерениям
-                measure(i);
+                measureAndSend(i);
 
 
             }
@@ -125,7 +129,7 @@ void process (unsigned char* adc)
         {
             if (signalsArray[i-2]->isSignalPresent)
             {
-                measure(i);
+                measureAndSend(i);
             }
         }
     }
