@@ -18,7 +18,7 @@ void sendPointsToUart(DataToSend *data)
 }
 void sendDifferenceToUart()
 {
-s
+ssdsd
 }
 void filter (unsigned char* adc)
 {
