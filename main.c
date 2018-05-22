@@ -16,9 +16,18 @@ void sendPointsToUart(DataToSend *data)
 {
     //организовываем передачу по UART
 }
-void sendDifferenceToUart()
+float sendDifferenceToUart(unsigned char channel1, unsigned char channel2)
 {
-ssdsd
+    //угол наклона вычисляется по тангенсу: (y2-y1)/(x2-x1)
+    unsigned int numerator1=sendArray[channel1]->y2 - sendArray[channel1]->y1;
+    unsigned int denominator1=sendArray[channel1]->x2 - sendArray[channel1]->x1;
+    unsigned int numerator2=sendArray[channel2]->y2 - sendArray[channel2]->y1;
+    unsigned int denominator2=sendArray[channel2]->x2 - sendArray[channel2]->x1;
+    float tan1=numerator1/denominator1;
+    float tan2=numerator2/denominator2;
+    float diff=tan2-tan1;
+    return diff;
+
 }
 void filter (unsigned char* adc)
 {

@@ -25,6 +25,7 @@ typedef struct
     unsigned char x1,x2;
     unsigned int y1,y2;
 
+
 } DataToSend;
 
 unsigned char processSample (Signal* signal);
