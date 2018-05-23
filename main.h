@@ -1,6 +1,19 @@
 #ifndef MAIN_H
 #define MAIN_H
 #define DATA_BUFFER_LENGTH 256
+typedef enum
+{
+    PIEZO2MEMS2 = 2,
+    PIEZO4MEMS0 = 4
+
+} SensorMode;
+typedef enum
+{
+    STOP,
+    POINTS, //только 4 точки на уровнях bottomMeasureLevel и topMeasureLevel. Каждая пара точек - значение АЦП и номер семпла от начала превышения порога cutLevel
+    TAN,    //частное (тангенс)
+    DIFF    //разница
+} MeasureMode;
 typedef struct
 {
     unsigned int data[DATA_BUFFER_LENGTH];
@@ -27,6 +40,13 @@ typedef struct
 
 
 } DataToSend;
+typedef struct
+{
+    unsigned char mode;
+    unsigned int y1,y2;
+
+
+} RecievedData;
 
 unsigned char processSample (Signal* signal);
 void resetSignalAfterSend(unsigned char channel);

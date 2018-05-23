@@ -12,6 +12,8 @@ unsigned int adc2[256];
 unsigned int adc3[256];
 unsigned int adc[4];
 unsigned char i=0;
+SensorMode sensorMode = PIEZO2MEMS2;
+MeasureMode measureMode = STOP;
 void sendPointsToUart(DataToSend *data)
 {
     //организовываем передачу по UART
@@ -31,9 +33,7 @@ float sendDifferenceToUart(unsigned char channel1, unsigned char channel2)
 }
 void filter (unsigned char* adc)
 {
-    float EMA=0;
-    float coeff=0;
-    unsigned char data=0;
+
     for (i=0; i<2; i++)
     {
 
@@ -59,6 +59,11 @@ void filter (unsigned char* adc)
     }
 }
 
+void measureDCoffset()
+{
+
+
+}
 void measureAndSend(unsigned char channel)
 {
     unsigned char j=0;
@@ -94,12 +99,12 @@ void measureAndSend(unsigned char channel)
 void process (unsigned char* adc)
 {
 // adc - массив [0..3], где [0..1] - пьезо, [2..3] - mems
-    unsigned char iPiezoEnd=4;
+
 
     filter(adc);
-    if (MEMS) iPiezoEnd=2;
 
-    for (i=0; i<iPiezoEnd; i++)
+
+    for (i=0; i<sensorMode; i++)
     {
         if (signalsArray[i]->filterOut > signalsArray[i]->cutLevel) //Если на выходе фильтра уровень выше отсечки (для пьезо)
         {
@@ -132,7 +137,7 @@ void process (unsigned char* adc)
             signalsArray[i]->dataIndex=0;
         }
     }
-    if (MEMS)
+    if (sensorMode==PIEZO2MEMS2)
     {
         for (i=2; i<4; i++)
         {
@@ -146,7 +151,7 @@ void process (unsigned char* adc)
 }
 void resetSignalAfterSend(unsigned char channel)
 {
-    unsigned int j=0;
+
     signalsArray[channel]->integralValue=0;
     signalsArray[channel]->isSignalCaptured=0;
     signalsArray[channel]->isSignalPresent=0;
@@ -154,10 +159,7 @@ void resetSignalAfterSend(unsigned char channel)
     signalsArray[channel]->sum=0;
     signalsArray[channel]->dataIndex=0;
     signalsArray[channel]->isReady=1;
-//    for (j=0; j<DATA_BUFFER_LENGTH; j++)
-//    {
-//        signalsArray[channel]->data[j]=0;
-//    }
+
 }
 
 void initSignals()
@@ -165,12 +167,12 @@ void initSignals()
     unsigned int j=0;
     signalsArray[0]=&piezo0;
     signalsArray[1]=&piezo1;
-    signalsArray[2]=(MEMS)? &mems0 : &piezo0;
-    signalsArray[3]=(MEMS)? &mems1 : &piezo1;
+    signalsArray[2]=(sensorMode==PIEZO2MEMS2)? &mems0 : &piezo0;
+    signalsArray[3]=(sensorMode==PIEZO2MEMS2)? &mems1 : &piezo1;
     sendArray[0]= &piezo0ToSend;
     sendArray[1] = &piezo1ToSend;
-    sendArray[2] = (MEMS)? &mems0ToSend : &piezo0ToSend;
-    sendArray[3] = (MEMS)? &mems1ToSend : &piezo1ToSend;
+    sendArray[2] = (sensorMode==PIEZO2MEMS2)? &mems0ToSend : &piezo0ToSend;
+    sendArray[3] = (sensorMode==PIEZO2MEMS2)? &mems1ToSend : &piezo1ToSend;
     for (i=0; i<4; i++)
     {
        signalsArray[i]->cutLevel=10;
